@@ -24,25 +24,70 @@ class Piece
 		@is_king
 	end
 
-	def make_king
+	def promote
 		@is_king = true
 	end
 
-	def perform_slide(end_pos)
-		row, col = end_pos
-		if valid_slides.include?(end_pos)
-			make_king if (row == 0 && red? || row == 7 && black?)
+	def maybe_promote
+		promote if (row == 0 && red? || row == 7 && black?)
+	end
+
+	def perform_jump(end_pos)
+		if valid_jumps.include?(end_pos)
+			maybe_promote
+			place_piece(end_pos)
 			true
 		else
 			false
 		end
 	end
 
+	def place_piece(end_pos)
+		self.pos = end_pos
+		board[*end_pos] = self
+	end
+
+	def perform_slide(end_pos)
+		row, col = end_pos
+		if valid_slides.include?(end_pos)
+			maybe_promote
+			place_piece(end_pos)
+			true
+		else
+			false
+		end
+	end
+
+	def valid_slides
+		row, col = self.pos
+		end_positions = []
+		slide_diffs.each do |d_row, d_col|
+			new_row, new_col = row+d_row, col+d_col
+			if on_board_and_empty?([new_row, new_col])
+				end_positions << [new_row, new_col]
+			end
+		end
+		end_positions
+	end
+
+	def valid_jumps
+		row, col = self.pos
+		end_positions = []
+		jump_diffs.each do |d_row, d_col|
+			new_row, new_col = row+d_row, col+d_col
+			jumped_row, jumped_col = row+(d_row/2), col+(d_col/2)
+			if on_board_and_empty?([new_row, new_col]) && enemy?([jumped_row, jumped_col])
+				end_positions << [new_row, new_col]
+			end
+		end
+		end_positions
+	end
+
 	def red?
 		color == :red
 	end
 
-	def black
+	def black?
 		color == :black
 	end
 
@@ -50,25 +95,23 @@ class Piece
 		color != other_piece.color
 	end
 
-	def perform_jump(end_pos)
+	
+	def enemy?(pos)
+		on_board?(pos) && (board[*pos].color == other_color)
 	end
 
-	def valid_slides
-		row, col = pos
-		end_positions = []
-		slide_diffs.each do |d_row, d_col|
-			new_row, new_col = row+d_row, col+d_col
-			if on_board?([new_row, new_row]) && board[new_row, new_col].empty?
-				end_positions << [new_row, new_col]
-		end
-		end_positions
+	def on_board_and_empty?(end_pos)
+		on_board?(end_pos) && empty?(end_pos)
 	end
 
-	def on_board(pos)
-		row, col = pos
+	def on_board?(end_pos)
+		row, col = end_pos
 		row.between?(0, 8) && col.between?(0,8)
 	end
 
+	def empty?(end_pos)
+		board[*pos].empty?
+	end
 
 	def slide_diffs
 		return SLIDE_DIFFS + JUMP_DIFFS if is_king?
@@ -79,8 +122,6 @@ class Piece
 		return JUMP_DIFFS if is_king?
 		color == :red? ? JUMP_DIFFS.take(2) : JUMP_DIFFS.drop(2)
 	end
-
-
 
 	
 end
