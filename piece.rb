@@ -19,12 +19,6 @@ class Piece
 	attr_accessor :pos, :board
 	attr_reader :color
 
-	def perform_moves(move_array)
-		jumped = false
-		start_pos = self.pos
-		duped_board = board.dup
-	end
-
 	def perform_move!(move_array)
 		if valid_slides.include?(move_array.first)
 			raise InvalidMoveError if move_array.length != 1

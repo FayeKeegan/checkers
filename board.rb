@@ -37,12 +37,24 @@ class Board
 				if square.empty?
 					duped_board[i,j] = EmptySquare.new
 				else
-					duped_board[i,j] = Piece.new(square.color, [i,j], duped_board, square.is_king?)
+					duped_board[i,j] = Piece.new(square.color, [i,j], duped_board, square.king?)
 				end
 			end
 		end
 		duped_board
 	end
+
+	def valid_move_seq?(start_pos, move_array)
+		duped_board = self.dup
+		begin 
+			duped_board[*start_pos].perform_move!(move_array)
+		rescue InvalidMoveError
+			return false
+		else
+			true
+		end
+	end
+
 
 	def render
 		puts ("    0  1  2  3  4  5  6  7 ")
