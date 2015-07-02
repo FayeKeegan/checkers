@@ -18,29 +18,32 @@ class Board
 		@grid[row][col] = mark
 	end
 
-
-
 	def setup_board
+		(0..2).each do |i|
+			(0..7).each do |j|
+				if (i + j).odd?
+					self[i,j] = Piece.new(:black, [i,j], self)
+					self[i+5,j-1] = Piece.new(:white, [i+5,j-1], self)
+				end
+			end
+		end
+		nil
 	end
 
 	def render
+		puts ("    0  1  2  3  4  5  6  7 ")
 		grid.each_with_index do |row, i|
-			print_row = []
+			print_row = [" #{i} "]
 			row.each_with_index do |square, j|
 				if (i + j).even?
-					print_row << square.to_s.colorize(background: :blue)
-				else
 					print_row << square.to_s.colorize(background: :light_blue)
+				else
+					print_row << square.to_s.colorize(background: :blue)
 				end
 			end
 			puts print_row.join("")
 		end
 		nil
-	end
-
-	def setup_test_board
-		b = Board.new
-		p = Piece.new(:white, [3,3], b)
 	end
 
 end

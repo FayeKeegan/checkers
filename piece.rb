@@ -22,10 +22,21 @@ class Piece
 		@is_king = is_king
 	end
 
+	def jumped_pos(end_pos)
+		end_row, end_col = end_pos
+		row, col = pos
+		[(end_row + row)/2, (end_col+col)/2]
+	end
+
+	def remove_jumped_piece(end_pos)
+		puts jumped_pos(end_pos).to_s
+		board[*jumped_pos(end_pos)] = EmptySquare.new
+	end
+
 	def perform_jump(end_pos)
 		if valid_jumps.include?(end_pos)
 			maybe_promote
-			#remove jumped piece from board
+			remove_jumped_piece(end_pos)
 			place_piece(end_pos)
 			true
 		else
@@ -34,8 +45,10 @@ class Piece
 	end
 
 	def place_piece(end_pos)
+		board[*self.pos] = EmptySquare.new
 		self.pos = end_pos
 		board[*end_pos] = self
+		nil
 	end
 
 	def perform_slide(end_pos)
@@ -53,11 +66,12 @@ class Piece
 		row, col = pos
 		end_positions = []
 		slide_diffs.each do |d_row, d_col|
-			new_pos = row+d_row, col+d_col
-			if on_board_and_empty?(new_pos)
-				end_positions << new_pos
+			new_row, new_col = (row+d_row), (col+d_col)
+			if on_board_and_empty?([new_row, new_col])
+				end_positions << [new_row, new_col]
 			end
 		end
+		puts end_positions.to_s
 		end_positions
 	end
 
@@ -65,10 +79,10 @@ class Piece
 		row, col = self.pos
 		end_positions = []
 		jump_diffs.each do |d_row, d_col|
-			new_pos = row+d_row, col+d_col
-			jump_pos = row+(d_row/2), col+(d_col/2)
-			if on_board_and_empty?(new_pos) && enemy?(jump_pos)
-				end_positions << new_pos
+			new_row, new_col= (row+d_row), (col+d_col)
+			jumped_row, jumped_col = row+(d_row/2), col+(d_col/2)
+			if on_board_and_empty?([new_row, new_col]) && enemy?([jumped_row, jumped_col])
+				end_positions << [new_row, new_col]
 			end
 		end
 		end_positions
@@ -97,6 +111,7 @@ class Piece
 	end
 
 	def maybe_promote
+		row, col = pos
 		promote if (row == 0 && white? || row == 7 && black?)
 	end
 
