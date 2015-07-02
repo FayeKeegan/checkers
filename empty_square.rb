@@ -1,13 +1,19 @@
 class EmptySquare
-	def initialize(pos)
+
+	def initialize
 	end
+
+	def to_s
+		"   "
+	end
+
 
 	def empty?
 		true
 	end
 
-	def piece?
+	def checker?
 		false
 	end
-	
+
 end
