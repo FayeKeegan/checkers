@@ -1,5 +1,9 @@
 require_relative 'board'
 
+class InvalidMoveError < StandardError
+end
+
+
 class Piece
 
 	SLIDE_DIFFS =[[-1,1],
@@ -14,6 +18,24 @@ class Piece
 
 	attr_accessor :pos, :board
 	attr_reader :color
+
+	def perform_moves(move_array)
+		jumped = false
+		start_pos = self.pos
+		duped_board = board.dup
+	end
+
+	def perform_move!(move_array)
+		if valid_slides.include?(move_array.first)
+			raise InvalidMoveError if move_array.length != 1
+			perform_slide(move_array.first)
+		else
+			move_array.each do |move|
+				raise InvalidMoveError unless valid_jumps.include?(move)
+				perform_jump(move)
+			end
+		end
+	end
 
 	def initialize(color, pos, board, is_king=false)
 		@color = color
@@ -35,9 +57,9 @@ class Piece
 
 	def perform_jump(end_pos)
 		if valid_jumps.include?(end_pos)
-			maybe_promote
 			remove_jumped_piece(end_pos)
 			place_piece(end_pos)
+			maybe_promote
 			true
 		else
 			false
@@ -54,8 +76,8 @@ class Piece
 	def perform_slide(end_pos)
 		row, col = end_pos
 		if valid_slides.include?(end_pos)
-			maybe_promote
 			place_piece(end_pos)
+			maybe_promote
 			true
 		else
 			false
