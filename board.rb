@@ -39,8 +39,8 @@ class Board
 	end
 
 	def setup_test_board
-
+		b = Board.new
+		p = Piece.new(:white, [3,3], b)
 	end
-
 
 end

@@ -25,6 +25,7 @@ class Piece
 	def perform_jump(end_pos)
 		if valid_jumps.include?(end_pos)
 			maybe_promote
+			#remove jumped piece from board
 			place_piece(end_pos)
 			true
 		else
@@ -49,12 +50,12 @@ class Piece
 	end
 
 	def valid_slides
-		row, col = self.pos
+		row, col = pos
 		end_positions = []
 		slide_diffs.each do |d_row, d_col|
-			new_row, new_col = row+d_row, col+d_col
-			if on_board_and_empty?([new_row, new_col])
-				end_positions << [new_row, new_col]
+			new_pos = row+d_row, col+d_col
+			if on_board_and_empty?(new_pos)
+				end_positions << new_pos
 			end
 		end
 		end_positions
@@ -64,10 +65,10 @@ class Piece
 		row, col = self.pos
 		end_positions = []
 		jump_diffs.each do |d_row, d_col|
-			new_row, new_col = row+d_row, col+d_col
-			jumped_row, jumped_col = row+(d_row/2), col+(d_col/2)
-			if on_board_and_empty?([new_row, new_col]) && enemy?([jumped_row, jumped_col])
-				end_positions << [new_row, new_col]
+			new_pos = row+d_row, col+d_col
+			jump_pos = row+(d_row/2), col+(d_col/2)
+			if on_board_and_empty?(new_pos) && enemy?(jump_pos)
+				end_positions << new_pos
 			end
 		end
 		end_positions
@@ -75,19 +76,19 @@ class Piece
 
 	def to_s
 		case
-		when white? && king?
-			" \u263A "
-		when white? && !king?
-			" \u25CF "
 		when black? && king?
-			" \u263B "
+			" \u263A "
 		when black? && !king?
+			" \u25CF "
+		when white? && king?
+			" \u263B "
+		when white? && !king?
 			" \u25CB "
 		end
 	end
 
 
-	def is_king?
+	def king?
 		@is_king
 	end
 
@@ -107,36 +108,40 @@ class Piece
 		color == :black
 	end
 
-	def other_color?(other_piece)
-		color != other_piece.color
+	def other_color
+		color == :white ? :black : :white
 	end
 
 	def on_board_and_empty?(end_pos)
-		on_board?(end_pos) && empty?(end_pos)
+		on_board?(end_pos) && board[*end_pos].empty?
 	end
 
 	def on_board?(end_pos)
 		row, col = end_pos
-		row.between?(0, 8) && col.between?(0, 8)
+		row.between?(0, 7) && col.between?(0, 7)
 	end
 
-	def empty?(end_pos)
-		board[*pos].empty?
+	def empty?
+		false
+	end
+
+	def checker?
+		true
 	end
 
 	def enemy?(pos)
-		on_board?(pos) && (board[*pos].color == other_color)
+		board[*pos].checker? && (board[*pos].color == other_color)
 	end
 
 	def slide_diffs
-		return SLIDE_DIFFS + JUMP_DIFFS if is_king?
-		color == :white? ? SLIDE_DIFFS.take(2) : SLIDE_DIFFS.drop(2) 
+		return SLIDE_DIFFS if king?
+		white? ? SLIDE_DIFFS.take(2) : SLIDE_DIFFS.drop(2) 
 	end
 
 	def jump_diffs
-		return JUMP_DIFFS if is_king?
-		color == :white? ? JUMP_DIFFS.take(2) : JUMP_DIFFS.drop(2)
+		return JUMP_DIFFS if king?
+		white? ? JUMP_DIFFS.take(2) : JUMP_DIFFS.drop(2)
 	end
-
-	
 end
+
+
