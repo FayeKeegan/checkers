@@ -113,11 +113,11 @@ class Piece
 	def to_s
 		case
 		when black? && king?
-			" \u263A "
+			" \u265A "
 		when black? && !king?
 			" \u25CF "
 		when white? && king?
-			" \u263B "
+			" \u265A "
 		when white? && !king?
 			" \u25CB "
 		end

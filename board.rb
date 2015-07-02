@@ -50,9 +50,9 @@ class Board
 			print_row = [" #{i} "]
 			row.each_with_index do |square, j|
 				if (i + j).even?
-					print_row << square.to_s.colorize(background: :light_blue)
+					print_row << square.to_s.colorize(background: :white)
 				else
-					print_row << square.to_s.colorize(background: :blue)
+					print_row << square.to_s.colorize(background: :red)
 				end
 			end
 			puts print_row.join("")
