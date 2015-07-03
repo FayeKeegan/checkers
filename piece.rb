@@ -3,13 +3,13 @@ require_relative 'board'
 class InvalidMoveError < StandardError
 end
 
-
 class Piece
-
-	SLIDE_DIFFS =[[-1,1],
-				[-1, -1],
-				[ 1, -1],
-				[ 1,  1]]	
+	SLIDE_DIFFS =[
+		[-1,1],
+		[-1, -1],
+		[ 1, -1],
+		[ 1,  1]
+	]	
 
 	JUMP_DIFFS =[[-2, 2],
 				[-2, -2],
@@ -45,7 +45,6 @@ class Piece
 	end
 
 	def remove_jumped_piece(end_pos)
-		puts jumped_pos(end_pos).to_s
 		board[*jumped_pos(end_pos)] = EmptySquare.new
 	end
 
@@ -82,7 +81,7 @@ class Piece
 		row, col = pos
 		end_positions = []
 		slide_diffs.each do |d_row, d_col|
-			new_row, new_col = (row+d_row), (col+d_col)
+			new_row, new_col = (row + d_row), (col + d_col)
 			if on_board_and_empty?([new_row, new_col])
 				end_positions << [new_row, new_col]
 			end
@@ -111,12 +110,11 @@ class Piece
 		when black? && !king?
 			" \u25CF "
 		when white? && king?
-			" \u265A "
+			" \u2654 "
 		when white? && !king?
 			" \u25CB "
 		end
 	end
-
 
 	def king?
 		@is_king

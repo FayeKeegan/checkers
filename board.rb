@@ -1,13 +1,15 @@
 require_relative 'piece.rb'
 require_relative 'empty_square'
+require_relative 'display'
 require 'colorize'
 
 class Board
+	attr_reader :grid, :display
 
-	attr_reader :grid
-
-	def initialize
+	def initialize(display=nil)
 		@grid = Array.new(8) { Array.new(8) { EmptySquare.new } }
+		@display = display
+		puts "display id " + display.object_id.to_s
 	end
 
 	def [](row, col)
@@ -49,7 +51,7 @@ class Board
 		begin 
 			duped_board[*start_pos].perform_move!(move_array)
 		rescue InvalidMoveError
-			return false
+		 	false
 		else
 			true
 		end
@@ -60,7 +62,9 @@ class Board
 		grid.each_with_index do |row, i|
 			print_row = [" #{i} "]
 			row.each_with_index do |square, j|
-				if (i + j).even?
+				if display.cursor_position == [i,j]
+					print_row << square.to_s.colorize(background: :blue)
+				elsif (i + j).even?
 					print_row << square.to_s.colorize(background: :white)
 				else
 					print_row << square.to_s.colorize(background: :red)
@@ -82,6 +86,6 @@ class Board
 	def all_pieces
 		grid.flatten.select {|square| square.checker?}
 	end
-
 end
+
 
