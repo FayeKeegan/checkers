@@ -55,7 +55,6 @@ class Board
 		end
 	end
 
-
 	def render
 		puts ("    0  1  2  3  4  5  6  7 ")
 		grid.each_with_index do |row, i|
@@ -70,6 +69,18 @@ class Board
 			puts print_row.join("")
 		end
 		nil
+	end
+
+	def on_board?(pos)
+		pos.all? {|i| i.between?(0, 7)}
+	end
+
+	def perform_move!(start_pos, move_array)
+		self[*start_pos].perform_move!(move_array)
+	end
+
+	def all_pieces
+		grid.flatten.select {|square| square.checker?}
 	end
 
 end
