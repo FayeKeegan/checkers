@@ -58,7 +58,6 @@ class Checkers
 		else
 			[move_arr.split(",").map(&:to_i)]
 		end
-
 	end
 
 	def take_turn
@@ -69,10 +68,8 @@ class Checkers
 			puts "Invalid Start"
 			retry
 		end
-		puts "Start : " + start_pos.to_s
 		
 		move_arr = move_prompt
-		puts "move arr: " + move_arr.to_s
 		if board.valid_move_seq?(start_pos, move_arr)
 			board.perform_move!(start_pos, move_arr)
 		else
@@ -84,7 +81,6 @@ class Checkers
 	def switch_player
 		current_player == :white ? self.current_player = :black : self.current_player = :white
 	end
-
 
 end
 
